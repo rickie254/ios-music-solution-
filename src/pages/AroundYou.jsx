@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Error, Loader, SongCard } from '../components';
@@ -12,15 +11,13 @@ const AroundYou = () => {
 
   console.log("around you", country);
 
-  // Because of some get request error from 'geo.ipify.org' api, I've made India as the default country.
-
-  // useEffect(() => {
-  //   axios
-  //     .get(`https://geo.ipify.org/api/v2/country?apiKey=${import.meta.env.VITE_GEO_API_KEY}`)
-  //     .then((res) => setCountry(res?.data?.location.country))
-  //     .catch((err) => console.log(err))
-  //     .finally(() => setLoading(false));
-  // }, [country]);
+  useEffect(() => {
+    fetch(`https://geo.ipify.org/api/v2/country?apiKey=${import.meta.env.VITE_GEO_API_KEY}`)
+      .then((res) => res.json())
+      .then((data) => setCountry(data?.location?.country))
+      .catch((err) => console.log(err))
+      .finally(() => setLoading(false));
+  }, []);
 
   if (isFetching && loading) return <Loader title="Loading songs around you" />;
 
@@ -34,7 +31,7 @@ const AroundYou = () => {
 
       <div className="flex flex-wrap sm:justify-start justify-center gap-8">
         {data?.map((song, i) => (
-          (song.artists && song.images &&
+          song.artists && song.images && (
             <SongCard
               key={song.key}
               song={song}
@@ -47,7 +44,7 @@ const AroundYou = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default AroundYou;
